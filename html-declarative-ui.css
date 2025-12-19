@@ -194,8 +194,10 @@ TEXT PRIMITIVE
 ============================================================================= */
 
 .text {
-  font-family: "Noto Sans TC", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --padding-vertical: initial;
+  --padding-horizontal: initial;
 
+  font-family: "Noto Sans TC", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   color: var(--color, black);
 
   padding: var(--padding-vertical, 0) var(--padding-horizontal, 0);
@@ -207,8 +209,9 @@ DECORATION PRIMITIVE
 
 .divider {
   flex: 1;
-  height: var(--divider-height, 3px);
-  background-color: var(--divider-color, #096558);
+  height: var(--height, 1px);
+  min-height: var(--height, 1px);
+  background-color: var(--color, #096558);
 }
 
 /* =============================================================================
