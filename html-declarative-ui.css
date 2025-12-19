@@ -1,0 +1,337 @@
+/* =============================================================================
+html-declarative-ui
+A Declarative UI Language for HTML
+
+Version: 0.1
+Author: Charles Kan
+Status: Language Specification (Primitives-only)
+
+------------------------------------------------------------------------------
+WHAT THIS IS
+------------------------------------------------------------------------------
+html-declarative-ui is a small, declarative UI language built on top of
+plain HTML and CSS.
+
+It allows developers to write UI structures in HTML in a way similar to
+Flutter / SwiftUI — by composing a small set of primitives and injecting
+behavior through declarative properties (CSS custom properties).
+
+There is:
+- NO JavaScript runtime
+- NO virtual DOM
+- NO component system
+- NO build step
+
+This is a language layer, not a framework.
+
+------------------------------------------------------------------------------
+GOAL
+------------------------------------------------------------------------------
+- Enable writing UI as structure + intent, not as CSS selectors
+- Keep HTML readable as a UI tree
+- Separate:
+  - Structure (HTML)
+  - Behavior (primitives)
+  - Design decisions (props / policy)
+- Remain fully compatible with legacy HTML/CSS codebases
+- Allow incremental adoption
+
+------------------------------------------------------------------------------
+NON-GOALS (GUARDRAILS)
+------------------------------------------------------------------------------
+- This is NOT a component library
+- This does NOT provide buttons, cards, forms, or themes
+- This does NOT replace semantic HTML
+- This does NOT encode business meaning into class names
+- This does NOT create value-based utility classes (px-4, gap-6, text-xl)
+- This does NOT rely on deep selector coupling
+
+If you want:
+- components → use a framework
+- utilities → use Tailwind
+- state / reactivity → use JS
+
+------------------------------------------------------------------------------
+MENTAL MODEL
+------------------------------------------------------------------------------
+Think in terms of a UI tree:
+
+- HTML expresses hierarchy
+- Primitives express layout behavior
+- CSS variables express configuration (props)
+- Nesting expresses composition
+- Media queries express policy, not structure
+
+If it feels like "writing widgets in HTML", it is working as intended.
+
+------------------------------------------------------------------------------
+NAMING & LANGUAGE RULES
+------------------------------------------------------------------------------
+- Class names represent UI behaviors (hstack, vstack, padding, text, divider)
+- Primitives are generic and business-agnostic
+- Configuration is injected via CSS custom properties
+- Properties use explicit, human-readable names
+  (e.g. --padding-horizontal, not --px)
+- No primitive should require another primitive to function
+- No primitive should depend on DOM ancestry selectors
+
+------------------------------------------------------------------------------
+DATA FLOW & OVERRIDING RULES
+------------------------------------------------------------------------------
+- CSS variables are data, not styles
+- Variables shadow by default; they do not add
+- Layout-related props MUST be localized inside layout primitives
+  to prevent accidental inheritance across UI boundaries
+- Additive spacing MUST be achieved through nesting (padding wrapper)
+- Fallback values MUST be provided inside primitives
+
+------------------------------------------------------------------------------
+RESPONSIVE STRATEGY
+------------------------------------------------------------------------------
+- Continuous change → use clamp()
+- Structural change → use media queries
+- Media queries modify policy, not markup
+- Markup should remain stable across breakpoints
+
+------------------------------------------------------------------------------
+ACCESSIBILITY BASELINE
+------------------------------------------------------------------------------
+- Semantic HTML elements must still be used (h1, p, button, a)
+- .text styles text; it does not define meaning
+- Decorative icons / SVGs should use:
+  aria-hidden="true" and focusable="false"
+
+------------------------------------------------------------------------------
+EVOLUTION RULES
+------------------------------------------------------------------------------
+A new primitive may be added only if:
+- It represents a repeated UI behavior
+- It reduces selector complexity
+- It improves readability of HTML as UI description
+
+A primitive must NOT be added if:
+- It encodes design values
+- It encodes business meaning
+- It exists only to save keystrokes
+============================================================================= */
+
+/* =============================================================================
+LAYOUT PRIMITIVES
+============================================================================= */
+
+/* HStack — Horizontal layout */
+.hstack {
+  /* Localized layout props */
+  --_align: var(--align, center);
+  --_justify: var(--justify, flex-start);
+  --_gap: var(--gap, 0);
+  --_width: var(--width, auto);
+  --_direction: var(--direction, row);
+
+  display: flex;
+  flex-direction: var(--_direction);
+
+  align-items: var(--_align);
+  justify-content: var(--_justify);
+  gap: var(--_gap);
+
+  width: var(--_width);
+}
+
+/* Policy: mobile stacks vertically by default */
+@media (max-width: 768px) {
+  .hstack {
+    --direction: column;
+  }
+}
+
+/* VStack — Vertical layout */
+.vstack {
+  --_align: var(--align, stretch);
+  --_justify: var(--justify, flex-start);
+  --_gap: var(--gap, 0);
+  --_width: var(--width, auto);
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: var(--_align);
+  justify-content: var(--_justify);
+  gap: var(--_gap);
+
+  width: var(--_width);
+}
+
+/* Spacer — Flexible empty space */
+.spacer {
+  flex: var(--flex, 1);
+}
+
+/* =============================================================================
+SPACING PRIMITIVE
+============================================================================= */
+
+/* Padding — additive via nesting */
+.padding {
+  padding: var(--padding-vertical, 0) var(--padding-horizontal, 0);
+}
+
+/* =============================================================================
+TEXT PRIMITIVE
+============================================================================= */
+
+.text {
+  font-family: "Noto Sans TC", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+
+  color: var(--color, black);
+
+  padding: var(--padding-vertical, 0) var(--padding-horizontal, 0);
+}
+
+/* =============================================================================
+DECORATION PRIMITIVE
+============================================================================= */
+
+.divider {
+  flex: 1;
+  height: var(--divider-height, 3px);
+  background-color: var(--divider-color, #096558);
+}
+
+/* =============================================================================
+BACKGROUND POLICY HELPER
+============================================================================= */
+
+.bg {
+  background-image: var(--bg-desktop, none);
+  background-size: var(--bg-size, cover);
+  background-position: var(--bg-position, center);
+  background-repeat: var(--bg-repeat, no-repeat);
+}
+
+@media (max-width: 768px) {
+  .bg {
+    background-image: var(--bg-mobile, var(--bg-desktop, none));
+  }
+}
+
+/* =============================================================================
+USAGE EXAMPLES (NORMATIVE)
+These examples define the intended usage of the language.
+If an API change makes these examples awkward or unclear,
+the language design is considered broken.
+============================================================================= */
+
+/*
+Example 1 — Simple vertical UI
+------------------------------
+<div class="vstack">
+  <h2 class="text">Overview</h2>
+  <p class="text">Complete the required steps to enter the lucky draw.</p>
+</div>
+*/
+
+/*
+Example 2 — Localized spacing (parent spacing does not leak)
+------------------------------------------------------------
+<div class="vstack" style="--gap:16px;">
+  <h2 class="text">Details</h2>
+
+  <div class="vstack">
+    <p class="text">Step one description.</p>
+    <p class="text">Step two description.</p>
+  </div>
+</div>
+*/
+
+/*
+Example 3 — Responsive HStack
+-----------------------------
+<div class="hstack" style="--gap:24px; --justify:center;">
+  <img src="icon-a.svg" alt="" />
+  <img src="icon-b.svg" alt="" />
+  <img src="icon-c.svg" alt="" />
+</div>
+*/
+
+/*
+Example 4 — Additive padding via nesting
+----------------------------------------
+<div class="vstack padding"
+     style="--padding-horizontal:clamp(16px,6vw,120px);">
+
+  <div class="padding" style="--padding-vertical:32px;">
+    <h2 class="text">How It Works</h2>
+  </div>
+
+  <p class="text">
+    Eligible users who complete the application during the campaign period
+    will be automatically entered into the draw.
+  </p>
+</div>
+*/
+
+/*
+Example 5 — Composite header (real-world composition)
+-----------------------------------------------------
+<div class="hstack" style="--gap:32px; --justify:center;">
+  <div class="divider"></div>
+
+  <svg aria-hidden="true"></svg>
+
+  <span class="text padding"
+        style="
+          --padding-vertical:12px;
+          --padding-horizontal:40px;
+          font-size:32px;
+          font-weight:700;
+          background:#096558;
+          color:white;
+          border-radius:8px;
+          white-space:nowrap;
+        ">
+    Lucky Draw Promotion
+  </span>
+
+  <svg style="transform:scaleX(-1);" aria-hidden="true"></svg>
+
+  <div class="divider"></div>
+</div>
+*/
+
+/*
+Example 6 — Background policy injection
+---------------------------------------
+<div class="vstack bg"
+     style="
+       --bg-desktop:url(bg_desktop.svg);
+       --bg-mobile:url(bg_mobile.svg);
+     ">
+  <h2 class="text">Campaign Information</h2>
+</div>
+*/
+
+/*
+Example 7 — Nested layout readability
+-------------------------------------
+<div class="vstack" style="--gap:48px;">
+
+  <div class="hstack" style="--gap:24px;">
+    <img src="image.png" alt="" />
+    <div class="vstack" style="--gap:8px;">
+      <h3 class="text">Title</h3>
+      <p class="text">Supporting description text.</p>
+    </div>
+  </div>
+
+  <div class="hstack" style="--justify:space-between;">
+    <span class="text">Left content</span>
+    <span class="text">Right content</span>
+  </div>
+
+</div>
+*/
+
+/* =============================================================================
+END OF html-declarative-ui
+============================================================================= */
