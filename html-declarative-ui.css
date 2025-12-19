@@ -121,32 +121,45 @@ LAYOUT PRIMITIVES
 
 /* HStack — Horizontal layout */
 .hstack {
-  /* Localized layout props */
+  --gap: initial;
+  --align: initial;
+  --justify: initial;
+  --width: initial;
+
+  /* localize with fallback */
+  --_gap: var(--gap, 0);
   --_align: var(--align, center);
   --_justify: var(--justify, flex-start);
-  --_gap: var(--gap, 0);
   --_width: var(--width, auto);
-  --_direction: var(--direction, row);
 
   display: flex;
-  flex-direction: var(--_direction);
+  flex-direction: row;
 
+  gap: var(--_gap);
   align-items: var(--_align);
   justify-content: var(--_justify);
-  gap: var(--_gap);
-
   width: var(--_width);
 }
 
-/* Policy: mobile stacks vertically by default */
+/* Web default policy: enable responsive stacks under `.responsive` */
 @media (max-width: 768px) {
-  .hstack {
-    --direction: column;
+  .responsive .hstack {
+    flex-direction: column;
+  }
+
+  /* opt-out: disable responsive within this subtree */
+  .responsive .no-responsive .hstack {
+    flex-direction: row;
   }
 }
 
 /* VStack — Vertical layout */
 .vstack {
+  --gap: initial;
+  --align: initial;
+  --justify: initial;
+  --width: initial;
+
   --_align: var(--align, stretch);
   --_justify: var(--justify, flex-start);
   --_gap: var(--gap, 0);
