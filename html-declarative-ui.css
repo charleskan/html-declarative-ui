@@ -143,12 +143,12 @@ LAYOUT PRIMITIVES
 
 /* Web default policy: enable responsive stacks under `.responsive` */
 @media (max-width: 768px) {
-  .responsive .hstack {
+  .hstack {
     flex-direction: column;
   }
 
   /* opt-out: disable responsive within this subtree */
-  .responsive .no-responsive .hstack {
+  .no-responsive .hstack {
     flex-direction: row;
   }
 }
