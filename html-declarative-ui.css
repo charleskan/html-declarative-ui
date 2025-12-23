@@ -147,8 +147,8 @@ LAYOUT PRIMITIVES
     flex-direction: column;
   }
 
-  /* opt-out: disable responsive within this subtree */
-  .no-responsive .hstack {
+  /* allow opt-out when placed directly on the element */
+  .hstack.no-responsive {
     flex-direction: row;
   }
 }
