@@ -186,7 +186,14 @@ SPACING PRIMITIVE
 
 /* Padding — additive via nesting */
 .padding {
-  padding: var(--padding-vertical, 0) var(--padding-horizontal, 0);
+  --_padding-vertical: var(--padding-vertical, 0);
+  --_padding-horizontal: var(--padding-horizontal, 0);
+  --_padding-top: var(--padding-top, var(--_padding-vertical));
+  --_padding-bottom: var(--padding-bottom, var(--_padding-vertical));
+  --_padding-left: var(--padding-left, var(--_padding-horizontal));
+  --_padding-right: var(--padding-right, var(--_padding-horizontal));
+
+  padding: var(--_padding-top) var(--_padding-right) var(--_padding-bottom) var(--_padding-left);
 }
 
 /* =============================================================================
