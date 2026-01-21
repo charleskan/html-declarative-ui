@@ -186,6 +186,13 @@ SPACING PRIMITIVE
 
 /* Padding — additive via nesting */
 .padding {
+  --padding-top: initial;
+  --padding-bottom: initial;
+  --padding-left: initial;
+  --padding-right: initial;
+  --padding-vertical: initial;
+  --padding-horizontal: initial;
+
   --_padding-vertical: var(--padding-vertical, 0);
   --_padding-horizontal: var(--padding-horizontal, 0);
   --_padding-top: var(--padding-top, var(--_padding-vertical));
@@ -204,7 +211,13 @@ TEXT PRIMITIVE
   --padding-vertical: initial;
   --padding-horizontal: initial;
 
-  font-family: "Noto Sans TC", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-family:
+    "Noto Sans TC",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Arial,
+    sans-serif;
   color: var(--color, black);
 
   padding: var(--padding-vertical, 0) var(--padding-horizontal, 0);
