@@ -223,6 +223,15 @@ TEXT PRIMITIVE
   padding: var(--padding-vertical, 0) var(--padding-horizontal, 0);
 }
 
+.wbr {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .wbr {
+    display: inline;
+  }
+}
 /* =============================================================================
 DECORATION PRIMITIVE
 ============================================================================= */
