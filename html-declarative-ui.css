@@ -228,10 +228,20 @@ DECORATION PRIMITIVE
 ============================================================================= */
 
 .divider {
-  flex: 1;
+  --height: initial;
+  --color: initial;
+
+  background: var(--color, #096558);
+  flex: 1 1 auto;
   height: var(--height, 1px);
   min-height: var(--height, 1px);
-  background-color: var(--color, #096558);
+}
+
+.bar {
+  --width: initial;
+  --color: initial;
+  width: var(--width, 1px);
+  background: var(--color, #096558);
 }
 
 /* =============================================================================
